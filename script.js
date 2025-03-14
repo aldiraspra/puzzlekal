@@ -31,7 +31,7 @@ const VERTICAL = 'vertical'
 var prev
 
 function setup() {
-    const imageParam = params.get('image') || 'https://i.postimg.cc/VLMGVCst/1.jpg'
+    const imageParam = params.get('image') || '1.jpg'
     const imageURL = isEncoded(imageParam) ? decodeURIComponent(imageParam) : imageParam
 
     canvas = createCanvas(windowWidth, windowHeight)
@@ -57,18 +57,15 @@ function setup() {
 
     // image
     else {
-
-        // solution for any image to load
-        createImg(imageURL, 'puzzle', null, event => {
-            var element = event.elt
-            img = new p5.Image(element.width, element.height, p5.instance)
-            img.drawingContext.drawImage(element, 0, 0)
-            img.modified = true
-    
-            document.querySelector('.ui').classList.remove('disabled')
-            loading = false
-            start()
-        })
+        img = loadImage(imageURL, () => {
+            console.log("Gambar berhasil dimuat");
+            document.querySelector('.ui').classList.remove('disabled');
+            loading = false;
+            start();
+        }, () => {
+            console.error("Gagal memuat gambar");
+            error = true;
+        });
     }
 
     // 10 sec timeout
@@ -173,6 +170,10 @@ function start() {
 }
 
 function draw() {
+    background(255);
+    if (img) {
+        image(img, 0, 0, width, height);
+    }
 
     // loading screen
     if(loading) {
